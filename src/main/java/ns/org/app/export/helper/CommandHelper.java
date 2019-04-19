@@ -53,21 +53,24 @@ public class CommandHelper {
 		// check environment to run command
 		if (isWindows) {
 			// -- Window --
-			log.debug("OS detected : Window");
+			log.debug("Environment detected : dos");
 			cmdParams.add("cmd.exe");
 			command.append("C:/Program Files/MongoDB/Server/3.4/bin/mongoexport.exe");
 
 		} else {
 			// -- All Linux, MacIntosh --
-			log.debug("OS detected : Linux");
+			log.debug("Environment detected : Shell");
 			cmdParams.add("bash");
 			// Adding command
 			cmdParams.add("-c"); // command signal
 			command.append("/usr/local/mongodb/bin/mongoexport ");
 		}
 
-		command.append("-h localhost:27017 -d " + dbName + " -c " + collectionName + " -o " + outputFileDir
-				+ System.currentTimeMillis() + ".json");
+		command.append(" -h ").append(host);
+		command.append(" -d ").append(dbName);
+		command.append(" -c ").append(collectionName);
+		command.append(" -o ").append(outputFileDir).append(System.currentTimeMillis()).append(".json");
+
 		log.debug("command [{}]", command);
 		cmdParams.add(command.toString());
 		executeCommand(cmdParams);
@@ -96,7 +99,8 @@ public class CommandHelper {
 
 			int exitVal = process.waitFor();
 			if (exitVal == 0) {
-				log.info("Command executed successfully {}", output);
+				log.info("[{}] Command executed successfully", output);
+				log.info("Exported location {}", outputFileDir);
 			} else {
 				log.error("Command failed to executed, code [{}], [{}]", exitVal, error);
 			}
