@@ -90,7 +90,6 @@ public class CommandHelper {
 
 			// Get output
 			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-			BufferedReader error = new BufferedReader(new InputStreamReader(process.getErrorStream()));
 
 			String line = "";
 			while ((line = reader.readLine()) != null) {
@@ -108,7 +107,7 @@ public class CommandHelper {
 			System.exit(0); // stop the service
 
 		} catch (Exception e) {
-			log.error("Unknown error occured, failed to execute");
+			log.error("Unknown error occured, failed to export data [{}]", e);
 		}
 
 	}
