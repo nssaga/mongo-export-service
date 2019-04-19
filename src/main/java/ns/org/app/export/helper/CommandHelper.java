@@ -98,11 +98,11 @@ public class CommandHelper {
 			}
 
 			int exitVal = process.waitFor();
+			log.info("[{}]", output);
 			if (exitVal == 0) {
-				log.info("[{}] Command executed successfully", output);
-				log.info("Exported location {}", outputFileDir);
+				log.info("Command executed successfully and exported at location [{}]", outputFileDir);
 			} else {
-				log.error("Command failed to executed, code [{}], [{}]", exitVal, error);
+				log.error("Command failed to executed, code [{}]", exitVal);
 			}
 			log.info("Stopping service");
 			System.exit(0); // stop the service
