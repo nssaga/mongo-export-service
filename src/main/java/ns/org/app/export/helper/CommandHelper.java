@@ -26,16 +26,23 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class CommandHelper {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(CommandHelper.class);
 
-	@Value("mongo.host")
+	@Value("${export.mongo.host}")
 	private String host;
-	
+
+	@Value("${export.mongo.db.name}")
+	private String dbName;
+
+	@Value("${export.mongo.db.collection}")
+	private String collectionName;
+
+	@Value("${export.dir}")
+	private String outputFileDir;
+
 	public void createCommand() {
-		String dbName = "test";
-		String collectionName = "movie";
-		String outputFile = "/Users/nawalsah/dumps/" + System.currentTimeMillis() + ".json ";
+
 		StringBuilder command = new StringBuilder(); // command variable to execute
 
 		// command arguments variable
@@ -58,15 +65,16 @@ public class CommandHelper {
 			cmdParams.add("-c"); // command signal
 			command.append("/usr/local/mongodb/bin/mongoexport ");
 		}
-		System.out.println(host);
-		command.append("-h localhost:27017 -d " + dbName + " -c " + collectionName + " -o " + outputFile);
-		System.out.println(command.toString());
+
+		command.append("-h localhost:27017 -d " + dbName + " -c " + collectionName + " -o " + outputFileDir
+				+ System.currentTimeMillis() + ".json");
+		log.debug("command [{}]", command);
 		cmdParams.add(command.toString());
 		executeCommand(cmdParams);
 	}
 
 	private void executeCommand(List<String> cmdParams) {
-		
+
 		ProcessBuilder processBuilder = new ProcessBuilder();
 		processBuilder.redirectErrorStream(true);
 		StringBuilder output = new StringBuilder();
@@ -88,11 +96,12 @@ public class CommandHelper {
 
 			int exitVal = process.waitFor();
 			if (exitVal == 0) {
-				log.debug("Command executed successfully {}", output);
-				System.exit(0);
+				log.info("Command executed successfully {}", output);
 			} else {
-				log.error("Command failed to executed, code [{}], [{}]", exitVal, error.readLine());
+				log.error("Command failed to executed, code [{}], [{}]", exitVal, error);
 			}
+			log.info("Stopping service");
+			System.exit(0); // stop the service
 
 		} catch (Exception e) {
 			log.error("Unknown error occured, failed to execute");
